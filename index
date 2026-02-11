@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horaire</title>
+<style>
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #e0e5ec;
+    margin: 0;
+    color: #333;
+}
+
+/* --- Bandeau --- */
+header {
+    background-color: #1976d2;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    flex: 1;
+}
+.header-buttons-left,
+.header-buttons-right {
+    display: flex;
+    gap: 10px;
+}
+.header-buttons-left button,
+.header-buttons-right button {
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    box-shadow:
+        inset 0 1px 2px rgba(255,255,255,0.5),
+        0 6px 12px rgba(0,0,0,0.2);
+    background-color: #1976d2;
+    color: white;
+}
+.header-buttons-left button:hover,
+.header-buttons-right button:hover {
+    background-color: #1565c0;
+}
+
+/* --- Zones centrales --- */
+main {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 30px 30px;
+}
+.section {
+    background: #f4f6f8;
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow:
+        inset 0 8px 12px rgba(255,255,255,0.95),
+        inset 0 -12px 20px rgba(0,0,0,0.18),
+        inset 0 0 0 1px rgba(255,255,255,0.6),
+        0 14px 28px rgba(0,0,0,0.25);
+}
+h2 {
+    color: #1976d2;
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+}
+
+/* --- Zone 1 : Pointage --- */
+.flex-row { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    column-gap: 18px; 
+    row-gap: 10px; 
+}
+label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 3px; }
+input[type="time"], input[type="number"], input[type="text"], input[type="password"] { padding: 5px 6px; width: 110px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.85rem; background: rgba(255,255,255,0.75); }
+.volume-horaire-title { margin-top: 14px; margin-bottom: 6px; font-size: 1.1rem; font-weight: bold; color: #1976d2; }
+.objectifs { display: grid; grid-template-columns: 1fr 1fr; column-gap: 18px; }
+.objectifs input { width: 110px; }
+.objectif-actif label,
+.objectif-actif input {
+    background-color: #fff59d;
+}
+
+/* --- Zone 2 : Lecture des horaires --- */
+.lecture-horaires {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+}
+.temps-accompli-row { display: flex; justify-content: flex-start; align-items: flex-start; margin-bottom: 15px; gap: 30px; }
+.temps-container { display: flex; flex-direction: column; }
+.temps-titre { font-weight: bold; font-size: 1.2rem; margin-bottom: 4px; }
+.temps-restant .temps-titre { color: #2e7d32; }
+.temps-restant .temps-valeur { color: #2e7d32; text-align: center; }
+.temps-bonus .temps-titre { color: #1565c0; }
+.temps-bonus .temps-valeur { color: #1565c0; text-align: center; }
+.temps-valeur { font-size: 1.4rem; font-weight: bold; }
+.info-display { display: grid; grid-template-columns: 1fr 1fr; row-gap: 35px; column-gap: 20px; font-size: 1.1rem; font-weight: bold; margin-top: 35px; }
+.total-prevu-container { display: flex; justify-content: flex-start; align-items: center; font-size: 1.1rem; font-weight: bold; margin-top: 35px; }
+.total-prevu { color: #000; }
+.prevision { font-weight: bold; color: #000; margin-left: 120px; }
+.prevision-valeur { font-weight: bold; color: #000; }
+
+/* --- Zone 3 : Pause automatique minimale --- */
+.pause-auto {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+}
+.pause-auto h2 { color: #1976d2; margin-bottom: 12px; font-size: 1.2rem; }
+.pause-auto .jours { display: flex; gap: 5px; margin-top: 5px; }
+.pause-auto .jours button { flex: 1; padding: 6px 0; border-radius: 8px; border: 1px solid #ccc; cursor: pointer; background: #f4f6f8; }
+.pause-auto .jours button.active { background: #fff59d; }
+
+/* --- Footer --- */
+footer { 
+    background-color: #e0e5ec;
+    text-align: center; 
+    padding: 10px; 
+    font-size: 0.9rem;
+    margin-top: 20px;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="header-buttons-left">
+        <button id="btnLogin">Se Connecter</button>
+    </div>
+    <h1>Horaire</h1>
+    <div class="header-buttons-right">
+        <button id="btnReset">Réinitialiser</button>
+        <button id="btnSwitchObjectif">Objectif secondaire</button>
+    </div>
+</header>
+
+<main>
+    <!-- Zone 1 : Pointage -->
+    <section class="section pointage">
+        <h2>Pointage</h2>
+        <div class="flex-row">
+            <div><label>Arrivée matin</label><input type="time" id="arriveMatin"></div>
+            <div><label>Départ matin</label><input type="time" id="departMatin"></div>
+            <div><label>Arrivée après-midi</label><input type="time" id="arriveApresMidi"></div>
+            <div><label>Départ après-midi</label><input type="time" id="departApresMidi"></div>
+        </div>
+        <div class="volume-horaire-title">Volume horaire</div>
+        <div class="objectifs">
+            <div id="objectifPrincipal">
+                <label>Objectif principal</label>
+                <input type="time">
+            </div>
+            <div id="objectifSecondaire">
+                <label>Objectif secondaire</label>
+                <input type="time">
+            </div>
+        </div>
+    </section>
+
+    <!-- Zone 2 : Lecture des horaires -->
+    <section class="section lecture-horaires">
+        <h2>Lecture des horaires</h2>
+        <div class="temps-accompli-row">
+            <div class="temps-container temps-restant">
+                <div class="temps-titre">Temps restant</div>
+                <div class="temps-valeur">-- : --</div>
+            </div>
+            <div class="temps-container temps-bonus">
+                <div class="temps-titre">Temps bonus</div>
+                <div class="temps-valeur">-- : --</div>
+            </div>
+        </div>
+        <div class="info-display">
+            <div>Temps accompli : -- : --</div>
+            <div>Départ estimé : -- : --</div>
+        </div>
+        <div class="total-prevu-container">
+            <div class="total-prevu">Total prévu : -- : --</div>
+            <div class="prevision">Prévision : <span class="prevision-valeur">-- : --</span></div>
+        </div>
+    </section>
+
+    <!-- Zone 3 : Pause automatique minimale -->
+    <section class="section pause-auto">
+        <h2>Pause automatique minimale</h2>
+        <label><input type="checkbox" id="pauseAutoEnabled"> Activer pause automatique</label>
+        <label>Durée minimale (minutes) <input type="number" id="pauseAutoMinutes" value="45"></label>
+        <label>Jours actifs :</label>
+        <div class="jours">
+            <button data-jour="1">L</button>
+            <button data-jour="2">M</button>
+            <button data-jour="3">M</button>
+            <button data-jour="4">J</button>
+            <button data-jour="5">V</button>
+            <button data-jour="6">S</button>
+            <button data-jour="7">D</button>
+        </div>
+    </section>
+</main>
+
+<footer>Prototype visuel – structure figée</footer>
+</body>
+</html>
