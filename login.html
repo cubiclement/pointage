@@ -1,0 +1,81 @@
+// login.js
+
+// --- Sélection des éléments ---
+const btnLogin = document.getElementById('btnLogin');
+const blockLogin = document.getElementById('blockLogin');       // On supposera que le HTML flottant existe si besoin
+const blockNewPass = document.getElementById('blockNewPass');
+const validerLoginBtn = document.getElementById('validerLogin');
+const btnNouveauMDP = document.getElementById('btnNouveauMDP');
+const validerNewPassBtn = document.getElementById('validerNewPass');
+
+// --- Fonctions utilitaires ---
+function toggleBlock(block) {
+    block.style.display = (block.style.display === 'flex') ? 'none' : 'flex';
+}
+
+function fermerLogin() {
+    blockLogin.style.display = 'none';
+}
+
+function fermerNewPass() {
+    blockNewPass.style.display = 'none';
+}
+
+// --- Événements bouton "Se connecter" ---
+btnLogin.addEventListener('click', () => {
+    toggleBlock(blockLogin);
+    blockNewPass.style.display = 'none';
+});
+
+// --- Événement validation login ---
+validerLoginBtn.addEventListener('click', () => {
+    const nom = document.getElementById('loginNom').value.trim();
+    const code = document.getElementById('loginCode').value;
+
+    if (!nom || !code) {
+        alert("Toutes les informations sont requises.");
+        return;
+    }
+
+    alert(`Utilisateur "${nom}" connecté !`);
+    fermerLogin();
+});
+
+// --- Ouvrir bloc nouveau mot de passe ---
+btnNouveauMDP.addEventListener('click', () => {
+    fermerLogin();
+    blockNewPass.style.display = 'flex';
+});
+
+// --- Valider nouveau mot de passe ---
+validerNewPassBtn.addEventListener('click', () => {
+    const oldCode = document.getElementById('oldCode').value;
+    const newCode = document.getElementById('newCode').value;
+    const confirmCode = document.getElementById('confirmCode').value;
+
+    if (!oldCode || !newCode || !confirmCode) {
+        alert("Toutes les informations sont requises.");
+        return;
+    }
+
+    if (newCode !== confirmCode) {
+        alert("Les nouveaux codes ne correspondent pas.");
+        return;
+    }
+
+    alert("Nouveau code enregistré !");
+    fermerNewPass();
+});
+
+// --- Gestion touches clavier ---
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        fermerLogin();
+        fermerNewPass();
+    }
+
+    if (e.key === 'Enter') {
+        if (blockLogin.style.display === 'flex') validerLoginBtn.click();
+        if (blockNewPass.style.display === 'flex') validerNewPassBtn.click();
+    }
+});
