@@ -1,95 +1,86 @@
-document.addEventListener("DOMContentLoaded", function () {
+// Récupération des blocs flottants
+const blockLogin = document.getElementById('blockLogin');
+const blockNewPass = document.getElementById('blockNewPass');
 
-    // ===== Vérification bouton =====
-    const loginButton = document.getElementById("connecterButton");
+// Récupération des boutons du header
+const btnLogin = document.getElementById('btnLogin');
+const btnNouveauMDP = document.getElementById('btnNouveauMDP');
+const validerLogin = document.getElementById('validerLogin');
+const validerNewPass = document.getElementById('validerNewPass');
 
-    if (!loginButton) {
-        console.error("ERREUR : bouton 'connecterButton' introuvable.");
+// Fonction pour afficher ou cacher un bloc flottant
+function toggleBlock(block) {
+    block.style.display = (block.style.display === 'flex') ? 'none' : 'flex';
+}
+
+// --- Ouverture bloc login ---
+btnLogin.addEventListener('click', () => {
+    blockLogin.style.display = 'flex';
+    blockNewPass.style.display = 'none';
+});
+
+// --- Valider login ---
+validerLogin.addEventListener('click', () => {
+    const nom = document.getElementById('loginNom').value.trim();
+    const code = document.getElementById('loginCode').value;
+    if (!nom || !code) {
+        alert("Toutes les informations sont requises.");
         return;
     }
 
-    // ===== Création du modal dynamiquement =====
-    const modal = document.createElement("div");
-    modal.id = "loginModal";
-    modal.style.position = "fixed";
-    modal.style.top = "0";
-    modal.style.left = "0";
-    modal.style.width = "100%";
-    modal.style.height = "100%";
-    modal.style.backgroundColor = "rgba(0,0,0,0.5)";
-    modal.style.display = "none";
-    modal.style.zIndex = "9999";
+    // Stockage local
+    localStorage.setItem('userNom', nom);
+    localStorage.setItem('userCode', code);
 
-    modal.innerHTML = `
-        <div style="
-            background:white;
-            width:360px;
-            margin:10% auto;
-            padding:20px;
-            border-radius:8px;
-            text-align:center;
-            position:relative;
-        ">
-            <span id="closeLogin" style="
-                position:absolute;
-                right:10px;
-                top:5px;
-                font-size:22px;
-                cursor:pointer;
-            ">&times;</span>
+    alert(`Utilisateur "${nom}" connecté !`);
+    blockLogin.style.display = 'none';
+});
 
-            <h2>Connexion</h2>
+// --- Nouveau mot de passe ---
+btnNouveauMDP.addEventListener('click', () => {
+    blockLogin.style.display = 'none';
+    blockNewPass.style.display = 'flex';
+});
 
-            <input type="text" id="loginName" placeholder="Nom"
-                style="width:90%;padding:8px;margin:8px 0;"><br>
+// --- Valider nouveau mot de passe ---
+validerNewPass.addEventListener('click', () => {
+    const oldCode = document.getElementById('oldCode').value;
+    const newCode = document.getElementById('newCode').value;
+    const confirmCode = document.getElementById('confirmCode').value;
 
-            <input type="password" id="loginPassword" placeholder="Mot de passe provisoire"
-                style="width:90%;padding:8px;margin:8px 0;"><br>
+    if (!oldCode || !newCode || !confirmCode) {
+        alert("Toutes les informations sont requises.");
+        return;
+    }
 
-            <button id="loginValidate"
-                style="padding:8px 15px;margin-top:10px;">
-                Valider
-            </button>
+    if (newCode !== confirmCode) {
+        alert("Les nouveaux codes ne correspondent pas.");
+        return;
+    }
 
-            <hr style="margin:20px 0;">
+    // Mise à jour du code dans local storage
+    localStorage.setItem('userCode', newCode);
 
-            <button id="openReset"
-                style="padding:6px 12px;">
-                Modifier mot de passe
-            </button>
-        </div>
-    `;
+    alert("Nouveau code enregistré !");
+    blockNewPass.style.display = 'none';
+});
 
-    document.body.appendChild(modal);
+// --- Raccourcis clavier ---
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        blockLogin.style.display = 'none';
+        blockNewPass.style.display = 'none';
+    }
+    if (e.key === 'Enter') {
+        if (blockLogin.style.display === 'flex') validerLogin.click();
+        if (blockNewPass.style.display === 'flex') validerNewPass.click();
+    }
+});
 
-    // ===== Ouverture modal =====
-    loginButton.addEventListener("click", function () {
-        modal.style.display = "block";
-    });
-
-    // ===== Fermeture =====
-    document.getElementById("closeLogin").addEventListener("click", function () {
-        modal.style.display = "none";
-    });
-
-    window.addEventListener("click", function (e) {
-        if (e.target === modal) {
-            modal.style.display = "none";
-        }
-    });
-
-    // ===== Simulation login =====
-    document.getElementById("loginValidate").addEventListener("click", function () {
-        const name = document.getElementById("loginName").value;
-        const pass = document.getElementById("loginPassword").value;
-
-        if (name === "" || pass === "") {
-            alert("Champs manquants.");
-            return;
-        }
-
-        alert("Connexion simulée OK.");
-        modal.style.display = "none";
-    });
-
+// --- Remplissage automatique depuis local storage au chargement ---
+window.addEventListener('load', () => {
+    const storedNom = localStorage.getItem('userNom');
+    const storedCode = localStorage.getItem('userCode');
+    if (storedNom) document.getElementById('loginNom').value = storedNom;
+    if (storedCode) document.getElementById('loginCode').value = storedCode;
 });
